@@ -2,8 +2,8 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen
-items-center justify-center bg-gray-50">
+  
+
       <div className="text-center p-6">
        <Image
          src="/next.svg"
@@ -14,7 +14,7 @@ items-center justify-center bg-gray-50">
        />
        <h1 className="mt-6 text-3xl
 font-bold text-gray-900">
-          PRS Home Connect
+          PRS Home Connect LIVE
         </h1>
          
         <p className="mt-2 text-gray-600">
@@ -22,6 +22,6 @@ font-bold text-gray-900">
 trusted professionals 
         </p>
       </div>
-    </main>
+    
    );
  }              
