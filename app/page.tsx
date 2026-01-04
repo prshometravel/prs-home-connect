@@ -1,68 +1,28 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-type Job = {
-  id: string;
-  title: string;
-  description: string | null;
-  category: string | null;
-  location: string | null;
-  created_at: string;
-};
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-export default function JobsPage() {
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchJobs = async () => {
-      const { data } = await supabase
-        .from("jobs")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      setJobs(Array.isArray(data) ? data : []);
-      setLoading(false);
-    };
-
-    fetchJobs();
-  }, []);
-
+export default function Home() {
   return (
-    <main className="p-6">
-      <h1 className="text-2xl font-bold mb-4">
-        Available Jobs
-      </h1>
+    <main style={{ padding: "40px", textAlign: "center" }}>
+      <h1>PRS Home Connect</h1>
+      <p>Connecting homeowners with trusted local professionals.</p>
 
-      {loading && <p>Loading...</p>}
-
-      {!loading && jobs.length === 0 && (
-        <p className="text-gray-500">No jobs posted yet.</p>
-      )}
-
-      <div className="space-y-4">
-        {jobs.map((job) => (
-          <div key={job.id} className="border p-4 rounded">
-            <h3 className="font-semibold">{job.title}</h3>
-
-            {job.description && (
-              <p className="text-gray-600">{job.description}</p>
-            )}
-
-            <p className="text-sm text-gray-500">
-              {job.category} • {job.location}
-            </p>
-          </div>
-        ))}
+      <div style={{ marginTop: "30px" }}>
+        <a
+          href="/homeowners"
+          style={{
+            padding: "12px 20px",
+            background: "#111",
+            color: "#fff",
+            textDecoration: "none",
+            borderRadius: "6px",
+          }}
+        >
+          Homeowners
+        </a>
       </div>
+
+      <footer style={{ marginTop: "60px", fontSize: "14px", color: "#666" }}>
+        © 2026 PRS Home Improvement and Security LLC
+      </footer>
     </main>
   );
 }
-
+	
