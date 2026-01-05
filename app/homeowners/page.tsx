@@ -1,31 +1,35 @@
-import Link from "next/link";
-export default function HomeownersPage() {
- return (
-   <div className="p-8 text-center">
-     <h1 className="text-3xl font-bold 
-text-gray-900">
-        Homeowners
+export default function HomeOwnersPage() {
+  return (
+    <main className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-4">
+        Home Owners
       </h1>
 
-       <p className="mt-4 text-gray-600">
-         Request trusted professionals for 
-your home projects.
+      <p className="text-gray-600 mb-6">
+        Post a job and connect with trusted local professionals.
       </p>
-  
-       
-    <div className="mt-8"> 
-      <Link
-        href="/post-job"
-        className="px-6 py-3 bg-black
-    text-white rounded-md inline-block"
-      >
-        Post a Job
-      </Link>
-          
-    </div>
-   </div>
-   );
- }
 
+      <div className="grid gap-4 sm:grid-cols-2">
+        <a
+          href="/post-job"
+          className="border rounded-lg p-4 hover:bg-gray-50"
+        >
+          <h2 className="font-semibold">Post a Job</h2>
+          <p className="text-sm text-gray-600">
+            Describe what you need done.
+          </p>
+        </a>
 
-    
+        <a
+          href="/jobs"
+          className="border rounded-lg p-4 hover:bg-gray-50"
+        >
+          <h2 className="font-semibold">Browse Jobs</h2>
+          <p className="text-sm text-gray-600">
+            View recent job requests.
+          </p>
+        </a>
+      </div>
+    </main>
+  );
+}

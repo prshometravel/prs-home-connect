@@ -1,40 +1,75 @@
-'use client'
+"use client";
+
 import { useState } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const signIn = async () => {
-    setMessage("Sending magic link...");
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
+  const signIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMessage("");
+    setLoading(true);
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
     });
+
+    setLoading(false);
 
     if (error) {
       setMessage(error.message);
-    } else {
-      setMessage("Check your email to sign in ✅");
+      return;
     }
+
+    setMessage("✅ Signed in!");
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "400px" }}>
-      <h1>Pro Sign In</h1>
+    <main className="p-6 max-w-md mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Sign In</h1>
 
-      <input
-        type="email"
-        placeholder="Enter your email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
-      />
+      <form onSubmit={signIn} className="space-y-3">
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full border p-2 rounded"
+          required
+        />
 
-      <button onClick={signIn}>Sign In</button>
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full border p-2 rounded"
+          required
+        />
 
-      {message && <p>{message}</p>}
-    </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-black text-white p-2 rounded"
+        >
+          {loading ? "Signing in..." : "Sign In"}
+        </button>
+
+        {message && <p className="text-sm text-gray-700">{message}</p>}
+      </form>
+
+      <div className="mt-4 text-sm text-gray-600">
+        Don’t have an account?{" "}
+        <Link className="underline" href="/sign-up">
+          Sign up
+        </Link>
+      </div>
+    </main>
   );
 }
-	

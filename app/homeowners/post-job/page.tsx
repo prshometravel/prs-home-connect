@@ -1,102 +1,62 @@
-export const dynamic = "force-dynamic";
-
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { getSupabase } from "@/lib/supabaseClient";
 
 export default function PostJobPage() {
-  const router = useRouter();
-
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("");
-  const [location, setLocation] = useState("");
-  const [description, setDescription] = useState("");
+  const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
-    setLoading(true);
+    setMessage(null);
+
+    const supabase = getSupabase();
+    if (!supabase) {
+      setMessage("Supabase is not configured on Vercel yet (missing env vars).");
+      return;
+    }
 
     if (!title.trim()) {
-      setError("Title is required");
-      setLoading(false);
+      setMessage("Title is required.");
       return;
     }
 
-    const { error } = await supabase.from("jobs").insert([
-      {
-        title: title.trim(),
-        category: category.trim() || null,
-        location: location.trim() || null,
-        description: description.trim() || null,
-      },
-    ]);
-
+    setLoading(true);
+    const { error } = await supabase.from("jobs").insert([{ title: title.trim() }]);
     setLoading(false);
 
-    if (error) {
-      setError(error.message);
-      return;
+    if (error) setMessage(error.message);
+    else {
+      setTitle("");
+      setMessage("✅ Job saved!");
     }
-
-    router.push("/jobs");
   };
 
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: 20 }}>
-      <h1>Post a Job</h1>
+    <div style={{ maxWidth: 640, margin: "0 auto", padding: 24 }}>
+      <h1 style={{ fontSize: 24, fontWeight: 700 }}>Post a Job</h1>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {message && <p style={{ marginTop: 12 }}>{message}</p>}
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Title</label>
-          <br />
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-        </div>
+      <form onSubmit={submit} style={{ marginTop: 16 }}>
+        <label style={{ display: "block", marginBottom: 6 }}>Job title</label>
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="e.g., Install a ceiling fan"
+          style={{ width: "100%", padding: 10 }}
+        />
 
-        <div>
-          <label>Category</label>
-          <br />
-          <input
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label>Location</label>
-          <br />
-          <input
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label>Description</label>
-          <br />
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-
-        <br />
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Posting..." : "Post Job"}
+        <button
+          type="submit"
+          disabled={loading}
+          style={{ marginTop: 12, padding: 10, width: "100%" }}
+        >
+          {loading ? "Saving..." : "Submit"}
         </button>
       </form>
     </div>
   );
 }
-	

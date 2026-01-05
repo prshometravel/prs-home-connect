@@ -1,22 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function PostJobPage() {
-  const router = useRouter();
-
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage(null);
+    setMessage("");
 
     if (!title.trim()) {
       setMessage("Title is required.");
@@ -38,75 +41,64 @@ export default function PostJobPage() {
 
     if (error) {
       setMessage(error.message);
-    } else {
-      setMessage("Job posted successfully!");
-      setTitle("");
-      setCategory("");
-      setLocation("");
-      setDescription("");
-
-      // Redirect to jobs list
-      setTimeout(() => {
-        router.push("/jobs");
-      }, 800);
+      return;
     }
+
+    setMessage("Job posted successfully!");
+    setTitle("");
+    setCategory("");
+    setLocation("");
+    setDescription("");
   };
 
   return (
-    <main style={{ maxWidth: 600, margin: "40px auto", padding: "0 16px" }}>
-      <h1 style={{ fontSize: 28, fontWeight: 800 }}>Post a Job</h1>
+    <main className="p-6 max-w-2xl mx-auto">
+      <Link href="/homeowners" className="text-sm text-gray-500">
+        ← Back to Home Owners
+      </Link>
 
-      <form onSubmit={handleSubmit} style={{ marginTop: 20, display: "grid", gap: 14 }}>
+      <h1 className="text-2xl font-bold mt-4 mb-4">Post a Job</h1>
+
+      <form onSubmit={submit} className="space-y-4">
         <input
-          placeholder="Job title *"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          style={{ padding: 12, borderRadius: 8, border: "1px solid #ccc" }}
+          placeholder="Job title (required)"
+          className="w-full border p-2 rounded"
         />
 
         <input
-          placeholder="Category (Cleaning, Moving, EV Charger, etc)"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          style={{ padding: 12, borderRadius: 8, border: "1px solid #ccc" }}
+          placeholder="Category (optional)"
+          className="w-full border p-2 rounded"
         />
 
         <input
-          placeholder="Location (City, State)"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          style={{ padding: 12, borderRadius: 8, border: "1px solid #ccc" }}
+          placeholder="Location (optional)"
+          className="w-full border p-2 rounded"
         />
 
         <textarea
-          placeholder="Job description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          placeholder="Describe the job (optional)"
+          className="w-full border p-2 rounded"
           rows={5}
-          style={{ padding: 12, borderRadius: 8, border: "1px solid #ccc" }}
         />
 
         <button
           type="submit"
           disabled={loading}
-          style={{
-            padding: 12,
-            borderRadius: 10,
-            background: "#111827",
-            color: "white",
-            fontWeight: 700,
-            cursor: "pointer",
-          }}
+          className="bg-black text-white px-4 py-2 rounded"
         >
           {loading ? "Posting..." : "Post Job"}
         </button>
-      </form>
 
-      {message && (
-        <p style={{ marginTop: 14, color: message.includes("success") ? "green" : "red" }}>
-          {message}
-        </p>
-      )}
+        {message && <p className="text-sm text-gray-700">{message}</p>}
+      </form>
     </main>
   );
 }
