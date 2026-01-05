@@ -1,8 +1,10 @@
+export const dynamic = "force-dynamic";
+
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function PostJobPage() {
   const router = useRouter();
@@ -19,12 +21,18 @@ export default function PostJobPage() {
     setError(null);
     setLoading(true);
 
+    if (!title.trim()) {
+      setError("Title is required");
+      setLoading(false);
+      return;
+    }
+
     const { error } = await supabase.from("jobs").insert([
       {
-        title,
-        category,
-        location,
-        description,
+        title: title.trim(),
+        category: category.trim() || null,
+        location: location.trim() || null,
+        description: description.trim() || null,
       },
     ]);
 
@@ -39,57 +47,56 @@ export default function PostJobPage() {
   };
 
   return (
-    <main style={{ maxWidth: 600, margin: "40px auto", padding: "0 16px" }}>
-      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 20 }}>
-        Post a Job
-      </h1>
+    <div style={{ maxWidth: 600, margin: "0 auto", padding: 20 }}>
+      <h1>Post a Job</h1>
 
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: 14 }}>
-        <input
-          type="text"
-          placeholder="Job title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
-        <input
-          type="text"
-          placeholder="Category (Cleaning, Moving, EV Charger, etc)"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        />
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Title</label>
+          <br />
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+        </div>
 
-        <input
-          type="text"
-          placeholder="Location (City, State)"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
+        <div>
+          <label>Category</label>
+          <br />
+          <input
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          />
+        </div>
 
-        <textarea
-          placeholder="Job description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows={4}
-        />
+        <div>
+          <label>Location</label>
+          <br />
+          <input
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          />
+        </div>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        <div>
+          <label>Description</label>
+          <br />
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            padding: "10px 16px",
-            background: "#111827",
-            color: "#fff",
-            borderRadius: 8,
-            fontWeight: 600,
-          }}
-        >
+        <br />
+
+        <button type="submit" disabled={loading}>
           {loading ? "Posting..." : "Post Job"}
         </button>
       </form>
-    </main>
+    </div>
   );
 }
+	
