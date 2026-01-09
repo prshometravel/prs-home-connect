@@ -1,75 +1,83 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
+import Link from "next/link";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
-  const signIn = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage("");
+    setError(null);
     setLoading(true);
 
     const { error } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
+      email,
       password,
     });
 
+    if (error) setError(error.message);
     setLoading(false);
-
-    if (error) {
-      setMessage(error.message);
-      return;
-    }
-
-    setMessage("✅ Signed in!");
   };
 
   return (
-    <main className="p-6 max-w-md mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Sign In</h1>
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
+      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
+        <h1 className="mb-2 text-center text-2xl font-bold">
+          PRS Home Connect
+        </h1>
+        <p className="mb-6 text-center text-sm text-gray-600">
+          Sign in to manage jobs and services
+        </p>
 
-      <form onSubmit={signIn} className="space-y-3">
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full border p-2 rounded"
-          required
-        />
+        {error && (
+          <div className="mb-4 rounded-md bg-red-100 p-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full border p-2 rounded"
-          required
-        />
+        <form onSubmit={handleSignIn} className="space-y-4">
+          <input
+            type="email"
+            placeholder="Email address"
+            className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-black text-white p-2 rounded"
-        >
-          {loading ? "Signing in..." : "Sign In"}
-        </button>
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
 
-        {message && <p className="text-sm text-gray-700">{message}</p>}
-      </form>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-md bg-black py-2 text-white hover:bg-gray-900 disabled:opacity-50"
+          >
+            {loading ? "Signing in..." : "Sign In"}
+          </button>
+        </form>
 
-      <div className="mt-4 text-sm text-gray-600">
-        Don’t have an account?{" "}
-        <Link className="underline" href="/sign-up">
-          Sign up
-        </Link>
+        <div className="mt-6 text-center text-sm text-gray-600">
+          <Link href="/forgot-password" className="hover:underline">
+            Forgot password?
+          </Link>
+          <span className="mx-2">•</span>
+          <Link href="/sign-up" className="hover:underline">
+            Create account
+          </Link>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }

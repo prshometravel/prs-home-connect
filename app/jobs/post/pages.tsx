@@ -42,29 +42,30 @@ export default function PostJobPage() {
     <main style={{ padding: 20, maxWidth: 700 }}>
       <h1>Post a Job</h1>
 
-      <form onSubmit={submitJob}>
-        <label>Job Title</label>
+      <form onSubmit={submitJob} style={{ marginTop: 16 }}>
+        <label style={{ display: "block", marginBottom: 6 }}>Job Title</label>
         <input
-          type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          style={{ width: "100%", padding: 10, marginBottom: 12 }}
+          placeholder="Example: TV Mounting"
+          style={{ width: "100%", padding: 10, marginBottom: 14 }}
         />
 
-        <label>Description</label>
+        <label style={{ display: "block", marginBottom: 6 }}>Description</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          style={{ width: "100%", padding: 10, height: 120, marginBottom: 12 }}
+          placeholder="Describe what the customer needs..."
+          style={{ width: "100%", padding: 10, height: 120, marginBottom: 14 }}
         />
 
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading} style={{ padding: "10px 14px" }}>
           {loading ? "Posting..." : "Post Job"}
         </button>
       </form>
 
-      {message && <p>{message}</p>}
+      {message && <p style={{ marginTop: 14 }}>{message}</p>}
     </main>
   );
 }
-
+	
