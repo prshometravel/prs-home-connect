@@ -1,18 +1,21 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-// Helpful error early (so build tells you what's missing)
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error("Missing Supabase env vars. Check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
+if (!supabaseUrl) {
+  throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL')
 }
 
-// Create ONE client (reused everywhere)
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+if (!supabaseAnonKey) {
+  throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY')
+}
 
-// Some pages may import getSupabase — keep it working
+export const supabase = createClient(
+  supabaseUrl,
+  supabaseAnonKey
+)
+
 export function getSupabase() {
-  return supabase;
+  return supabase
 }
-	
